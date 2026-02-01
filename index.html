@@ -1,316 +1,159 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Valentine?</title>
-  <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Valentine?</title>
-  <style>
-    :root{
-      --bg1:#fff0f6;
-      --bg2:#ffe4ea;
-      --text:#2a2a2a;
-      --yes:#22c55e;
-      --no:#ef4444;
-      --card:#ffffffcc;
-      --shadow: 0 18px 50px rgba(0,0,0,.12);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:
-        radial-gradient(1000px 600px at 20% 10%, #ffd1dc 0%, transparent 55%),
-        radial-gradient(900px 500px at 80% 90%, #ffc0cb 0%, transparent 55%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      overflow:hidden;
-      padding:20px;
-    }
-    .card{
-      width:min(560px, 92vw);
-      background:var(--card);
-      backdrop-filter: blur(8px);
-      border:1px solid rgba(255,255,255,.7);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      padding:28px 22px 24px;
-      text-align:center;
-      position:relative;
-    }
-    h1{
-      margin:0 0 10px;
-      font-size: clamp(26px, 4vw, 38px);
-      letter-spacing:.2px;
-    }
-    p{
-      margin:0 0 18px;
-      opacity:.85;
-      font-size: 16px;
-      line-height:1.4;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Valentine?</title>
 
-    /* Button area */
-    .buttons{
-      position:relative;
-      height:130px; /* room for the NO button to dodge */
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:18px;
-    }
+<style>
+:root{
+  --bg1:#fff0f6;
+  --bg2:#ffe4ea;
+  --text:#2a2a2a;
+  --yes:#22c55e;
+  --no:#ef4444;
+  --card:#ffffffcc;
+  --shadow: 0 18px 50px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box}
 
-    button{
-      border:none;
-      border-radius:14px;
-      padding:14px 20px;
-      font-size:18px;
-      font-weight:800;
-      cursor:pointer;
-      transition: transform .12s ease, filter .12s ease;
-      box-shadow: 0 10px 20px rgba(0,0,0,.12);
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      position:relative;
-      z-index:2;
-    }
-    button:active{ transform: scale(.98); }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(1000px 600px at 20% 10%, #ffd1dc 0%, transparent 55%),
+    radial-gradient(900px 500px at 80% 90%, #ffc0cb 0%, transparent 55%),
+    linear-gradient(135deg, var(--bg1), var(--bg2));
+  overflow:hidden;
+  padding:20px;
+}
 
-    #yesBtn{
-      background: linear-gradient(180deg, #34d399, var(--yes));
-      color:white;
-    }
-    #yesBtn:hover{ filter: brightness(1.03); }
+.card{
+  width:min(560px, 92vw);
+  background:var(--card);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:28px 22px;
+  text-align:center;
+}
 
-    #noBtn{
-      background: linear-gradient(180deg, #fb7185, var(--no));
-      color:white;
-      will-change: transform;
-    }
+h1{
+  margin:0 0 10px;
+  font-size: clamp(26px, 4vw, 38px);
+}
 
-    /* Hearts */
-    .heart{
-      position:fixed;
-      font-size:22px;
-      pointer-events:none;
-      animation: floatUp 1.8s ease-in forwards;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
-      z-index:5;
-    }
-    @keyframes floatUp{
-      0%   { transform: translateY(0) scale(1); opacity: 0; }
-      10%  { opacity: 1; }
-      100% { transform: translateY(-220px) scale(1.6); opacity: 0; }
-    }
+p{
+  margin:0 0 18px;
+  opacity:.8;
+}
 
-    /* YES grows huge */
-    .yes-grow{
-      animation: yesGrow 0.55s ease-out forwards;
-      transform-origin: center;
-      z-index:10;
-      position:relative;
-    }
-    @keyframes yesGrow{
-      0% { transform: scale(1); }
-      100% { transform: scale(6); }
-    }
+.buttons{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  height:120px;
+  align-items:center;
+}
 
-    /* Heart explosion (big heart appears) */
-    .big-heart{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform: translate(-50%, -55%) scale(0.2);
-      font-size: 90px;
-      opacity:0;
-      z-index:9;
-      animation: popHeart 0.45s ease-out forwards;
-      filter: drop-shadow(0 18px 28px rgba(0,0,0,.18));
-      pointer-events:none;
-    }
-    @keyframes popHeart{
-      0% { transform: translate(-50%, -55%) scale(0.2); opacity:0; }
-      70% { opacity:1; }
-      100% { transform: translate(-50%, -55%) scale(1); opacity:1; }
-    }
+button{
+  border:none;
+  border-radius:14px;
+  padding:14px 20px;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+  transition: transform .12s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,.12);
+}
 
-    .message{
-      display:none;
-      margin-top:18px;
-      font-size: 20px;
-      font-weight:900;
-      color:#b42318;
-      background: rgba(255,255,255,.75);
-      border: 1px solid rgba(0,0,0,.06);
-      padding:12px 14px;
-      border-radius: 14px;
-      z-index:3;
-      position:relative;
-    }
-    .footer{
-      margin-top:10px;
-      font-size:12px;
-      opacity:.6;
-    }
-  </style>
+#yesBtn{
+  background:linear-gradient(180deg,#34d399,var(--yes));
+  color:white;
+}
+
+#noBtn{
+  background:linear-gradient(180deg,#fb7185,var(--no));
+  color:white;
+}
+
+.bigMessage{
+  display:none;
+  font-size:22px;
+  font-weight:900;
+  margin-top:20px;
+}
+</style>
 </head>
+
 <body>
-  <main class="card" id="card">
-    <h1 id="question">Sarah, will you be my Valentine? 💘</h1>
-    <p id="sub">Choose wisely 😇</p>
 
-    <div class="buttons" id="arena">
-      <button id="yesBtn">YES</button>
-      <button id="noBtn">NO</button>
+<div class="card">
+  <h1>Sarah, will you be my Valentine? 💘</h1>
+  <p>Be honest... but choose wisely 😇</p>
 
-      <!-- big heart that appears after YES -->
-      <div id="bigHeart" class="big-heart" aria-hidden="true">❤️</div>
-    </div>
+  <div class="buttons">
+    <button id="yesBtn">YES</button>
+    <button id="noBtn">NO</button>
+  </div>
 
-    <div id="finalMsg" class="message">Go check your front porch❤️</div>
-    <div class="footer" id="hint">Try clicking “NO”… if you can 😭</div>
-  </main>
+  <div class="bigMessage" id="finalMsg">
+    Go check your front porch❤️
+  </div>
+</div>
 
-  <script>
-    const noBtn = document.getElementById('noBtn');
-    const yesBtn = document.getElementById('yesBtn');
-    const arena = document.getElementById('arena');
-    const bigHeart = document.getElementById('bigHeart');
-    const finalMsg = document.getElementById('finalMsg');
-    const hint = document.getElementById('hint');
-    const sub = document.getElementById('sub');
+<script>
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const finalMsg = document.getElementById('finalMsg');
 
-    let playing = true;
+let offsetX=0, offsetY=0, vx=0, vy=0;
+let pointerX=null, pointerY=null;
 
-    // NO button "tiny dodge" physics
-    let offsetX = 0, offsetY = 0;
-    let vx = 0, vy = 0;
+document.addEventListener('mousemove',e=>{
+  pointerX=e.clientX;
+  pointerY=e.clientY;
+});
 
-    // tune these
-    const dangerRadius = 120;     // how close before it starts dodging
-    const pushStrength = 0.22;    // how strongly it moves away
-    const maxOffset = 55;         // how far it can drift from its starting spot (small)
-    const friction = 0.86;        // smooth easing
+function animate(){
+  const rect=noBtn.getBoundingClientRect();
+  const bx=rect.left+rect.width/2;
+  const by=rect.top+rect.height/2;
 
-    // Get pointer coords for mouse/touch
-    let pointerX = null, pointerY = null;
+  if(pointerX!==null){
+    const dx=bx-pointerX;
+    const dy=by-pointerY;
+    const dist=Math.hypot(dx,dy);
 
-    function setPointer(x, y){
-      pointerX = x; pointerY = y;
+    if(dist<120){
+      vx+=dx/dist*2;
+      vy+=dy/dist*2;
     }
+  }
 
-    document.addEventListener('mousemove', (e)=> setPointer(e.clientX, e.clientY));
-    document.addEventListener('touchmove', (e)=>{
-      if (!e.touches || !e.touches[0]) return;
-      setPointer(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive:true });
+  offsetX=Math.max(-60,Math.min(60,offsetX+vx));
+  offsetY=Math.max(-40,Math.min(40,offsetY+vy));
 
-    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+  vx*=0.85;
+  vy*=0.85;
 
-    function animateNo(){
-      if (!playing) return;
+  noBtn.style.transform=`translate(${offsetX}px,${offsetY}px)`;
+  requestAnimationFrame(animate);
+}
+animate();
 
-      // If we don't have a pointer yet, just gently return to center
-      const btnRect = noBtn.getBoundingClientRect();
-      const bx = btnRect.left + btnRect.width/2;
-      const by = btnRect.top + btnRect.height/2;
+yesBtn.addEventListener('click',()=>{
+  yesBtn.style.transform="scale(5)";
+  setTimeout(()=>{
+    yesBtn.style.display="none";
+    finalMsg.style.display="block";
+  },400);
+});
+</script>
 
-      if (pointerX != null && pointerY != null){
-        const dx = bx - pointerX;
-        const dy = by - pointerY;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < dangerRadius){
-          // push away from pointer
-          const nx = dx / (dist || 1);
-          const ny = dy / (dist || 1);
-          const power = (dangerRadius - dist) * pushStrength;
-
-          vx += nx * power;
-          vy += ny * power;
-        }
-      }
-
-      // apply velocity + friction
-      offsetX = clamp(offsetX + vx, -maxOffset, maxOffset);
-      offsetY = clamp(offsetY + vy, -maxOffset, maxOffset);
-      vx *= friction;
-      vy *= friction;
-
-      // gentle return-to-center so it doesn't drift forever
-      offsetX *= 0.96;
-      offsetY *= 0.96;
-
-      noBtn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-
-      requestAnimationFrame(animateNo);
-    }
-
-    // Hearts burst animation
-    function spawnHeartBurst(count = 40) {
-      const hearts = ["💖","💘","💗","💓","💕","❤️"];
-      for (let i = 0; i < count; i++) {
-        const h = document.createElement("div");
-        h.className = "heart";
-        h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-        const x = Math.random() * window.innerWidth;
-        const y = window.innerHeight - (Math.random() * 120);
-
-        h.style.left = `${x}px`;
-        h.style.top = `${y}px`;
-        h.style.fontSize = `${16 + Math.random() * 26}px`;
-        h.style.animationDuration = `${1.4 + Math.random() * 1.2}s`;
-
-        document.body.appendChild(h);
-        setTimeout(() => h.remove(), 2600);
-      }
-    }
-
-    function win(){
-      if (!playing) return;
-      playing = false;
-
-      // stop NO movement
-      noBtn.style.pointerEvents = "none";
-      hint.style.display = "none";
-      sub.textContent = "WOOOO 😌";
-
-      // YES grows huge
-      yesBtn.classList.add('yes-grow');
-
-      // after it grows, hide it and pop a big heart
-      setTimeout(() => {
-        yesBtn.style.visibility = "hidden";
-        bigHeart.style.opacity = "1"; // animation handles the rest
-        bigHeart.style.display = "block";
-        finalMsg.style.display = "inline-block";
-        spawnHeartBurst(70);
-
-        const party = setInterval(() => spawnHeartBurst(20), 650);
-        setTimeout(()=> clearInterval(party), 4200);
-      }, 520);
-    }
-
-    yesBtn.addEventListener('click', win);
-
-    // If she somehow taps NO, just do a tiny dodge anyway
-    noBtn.addEventListener('click', () => {
-      vx += (Math.random() - 0.5) * 22;
-      vy += (Math.random() - 0.5) * 18;
-    });
-
-    // Start NO dodge loop
-    animateNo();
-  </script>
 </body>
 </html>
