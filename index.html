@@ -1,4 +1,14 @@
-viewport" content="width=device-width,initial-scale=1" />
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine?</title>
+  <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Valentine?</title>
   <style>
     :root{
@@ -48,29 +58,33 @@ viewport" content="width=device-width,initial-scale=1" />
       font-size: 16px;
       line-height:1.4;
     }
+
+    /* Button area */
     .buttons{
       position:relative;
-      height:120px; /* space for the runaway button */
-      margin-top:12px;
+      height:130px; /* room for the NO button to dodge */
       display:flex;
       align-items:center;
       justify-content:center;
       gap:18px;
-      flex-wrap:wrap;
     }
+
     button{
       border:none;
       border-radius:14px;
       padding:14px 20px;
       font-size:18px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       transition: transform .12s ease, filter .12s ease;
       box-shadow: 0 10px 20px rgba(0,0,0,.12);
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+      position:relative;
+      z-index:2;
     }
     button:active{ transform: scale(.98); }
+
     #yesBtn{
       background: linear-gradient(180deg, #34d399, var(--yes));
       color:white;
@@ -80,16 +94,7 @@ viewport" content="width=device-width,initial-scale=1" />
     #noBtn{
       background: linear-gradient(180deg, #fb7185, var(--no));
       color:white;
-      position:absolute;
-      left:calc(50% + 90px);
-      top:50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .footer{
-      margin-top:10px;
-      font-size:12px;
-      opacity:.6;
+      will-change: transform;
     }
 
     /* Hearts */
@@ -99,6 +104,7 @@ viewport" content="width=device-width,initial-scale=1" />
       pointer-events:none;
       animation: floatUp 1.8s ease-in forwards;
       filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
+      z-index:5;
     }
     @keyframes floatUp{
       0%   { transform: translateY(0) scale(1); opacity: 0; }
@@ -106,89 +112,147 @@ viewport" content="width=device-width,initial-scale=1" />
       100% { transform: translateY(-220px) scale(1.6); opacity: 0; }
     }
 
-    /* Success screen */
-    .success{
+    /* YES grows huge */
+    .yes-grow{
+      animation: yesGrow 0.55s ease-out forwards;
+      transform-origin: center;
+      z-index:10;
+      position:relative;
+    }
+    @keyframes yesGrow{
+      0% { transform: scale(1); }
+      100% { transform: scale(6); }
+    }
+
+    /* Heart explosion (big heart appears) */
+    .big-heart{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%, -55%) scale(0.2);
+      font-size: 90px;
+      opacity:0;
+      z-index:9;
+      animation: popHeart 0.45s ease-out forwards;
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,.18));
+      pointer-events:none;
+    }
+    @keyframes popHeart{
+      0% { transform: translate(-50%, -55%) scale(0.2); opacity:0; }
+      70% { opacity:1; }
+      100% { transform: translate(-50%, -55%) scale(1); opacity:1; }
+    }
+
+    .message{
       display:none;
-      margin-top:14px;
-    }
-    .success .big{
-      font-size: clamp(20px, 3vw, 26px);
-      font-weight:800;
-      margin:10px 0 0;
-    }
-    .porch{
-      margin-top:10px;
-      font-size: 18px;
-      font-weight:800;
+      margin-top:18px;
+      font-size: 20px;
+      font-weight:900;
       color:#b42318;
       background: rgba(255,255,255,.75);
       border: 1px solid rgba(0,0,0,.06);
-      padding:10px 12px;
+      padding:12px 14px;
       border-radius: 14px;
-      display:inline-block;
+      z-index:3;
+      position:relative;
+    }
+    .footer{
+      margin-top:10px;
+      font-size:12px;
+      opacity:.6;
     }
   </style>
 </head>
 <body>
   <main class="card" id="card">
     <h1 id="question">Sarah, will you be my Valentine? 💘</h1>
-    <p id="sub">Be honest… but choose wisely 😇</p>
+    <p id="sub">Choose wisely 😇</p>
 
     <div class="buttons" id="arena">
-      <button id="yesBtn" aria-label="Yes">YES</button>
-      <button id="noBtn" aria-label="No">NO</button>
+      <button id="yesBtn">YES</button>
+      <button id="noBtn">NO</button>
+
+      <!-- big heart that appears after YES -->
+      <div id="bigHeart" class="big-heart" aria-hidden="true">❤️</div>
     </div>
 
-    <div class="success" id="success">
-      <p class="big">YAYYYYY 💖💖💖</p>
-      <div class="porch">Go check your front porch 🏡</div>
-      <div class="footer">PS: You’re my favorite person.</div>
-    </div>
-
-    <div class="footer" id="hint">Tip: try clicking “NO” 😉</div>
+    <div id="finalMsg" class="message">Go check your front porch❤️</div>
+    <div class="footer" id="hint">Try clicking “NO”… if you can 😭</div>
   </main>
 
   <script>
     const noBtn = document.getElementById('noBtn');
     const yesBtn = document.getElementById('yesBtn');
     const arena = document.getElementById('arena');
-    const success = document.getElementById('success');
+    const bigHeart = document.getElementById('bigHeart');
+    const finalMsg = document.getElementById('finalMsg');
     const hint = document.getElementById('hint');
     const sub = document.getElementById('sub');
 
-    // Place NO button somewhere valid inside the arena
-    function moveNoButton() {
-      const arenaRect = arena.getBoundingClientRect();
-      const btnRect = noBtn.getBoundingClientRect();
+    let playing = true;
 
-      const padding = 10;
-      const maxX = arenaRect.width - btnRect.width - padding;
-      const maxY = arenaRect.height - btnRect.height - padding;
+    // NO button "tiny dodge" physics
+    let offsetX = 0, offsetY = 0;
+    let vx = 0, vy = 0;
 
-      const x = Math.max(padding, Math.random() * maxX);
-      const y = Math.max(padding, Math.random() * maxY);
+    // tune these
+    const dangerRadius = 120;     // how close before it starts dodging
+    const pushStrength = 0.22;    // how strongly it moves away
+    const maxOffset = 55;         // how far it can drift from its starting spot (small)
+    const friction = 0.86;        // smooth easing
 
-      // Position relative to arena
-      noBtn.style.left = `${x + btnRect.width/2}px`;
-      noBtn.style.top  = `${y + btnRect.height/2}px`;
-      noBtn.style.transform = "translate(-50%, -50%)";
+    // Get pointer coords for mouse/touch
+    let pointerX = null, pointerY = null;
+
+    function setPointer(x, y){
+      pointerX = x; pointerY = y;
     }
 
-    // Detect mouse proximity to NO button
-    function handleMouseMove(e) {
+    document.addEventListener('mousemove', (e)=> setPointer(e.clientX, e.clientY));
+    document.addEventListener('touchmove', (e)=>{
+      if (!e.touches || !e.touches[0]) return;
+      setPointer(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive:true });
+
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    function animateNo(){
+      if (!playing) return;
+
+      // If we don't have a pointer yet, just gently return to center
       const btnRect = noBtn.getBoundingClientRect();
-      const bx = btnRect.left + btnRect.width / 2;
-      const by = btnRect.top + btnRect.height / 2;
+      const bx = btnRect.left + btnRect.width/2;
+      const by = btnRect.top + btnRect.height/2;
 
-      const dx = e.clientX - bx;
-      const dy = e.clientY - by;
-      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (pointerX != null && pointerY != null){
+        const dx = bx - pointerX;
+        const dy = by - pointerY;
+        const dist = Math.hypot(dx, dy);
 
-      // If cursor gets too close, run away
-      const dangerRadius = 90;
-      if (dist < dangerRadius && !success.style.display) {
-        moveNoButton();
+        if (dist < dangerRadius){
+          // push away from pointer
+          const nx = dx / (dist || 1);
+          const ny = dy / (dist || 1);
+          const power = (dangerRadius - dist) * pushStrength;
+
+          vx += nx * power;
+          vy += ny * power;
+        }
       }
+
+      // apply velocity + friction
+      offsetX = clamp(offsetX + vx, -maxOffset, maxOffset);
+      offsetY = clamp(offsetY + vy, -maxOffset, maxOffset);
+      vx *= friction;
+      vy *= friction;
+
+      // gentle return-to-center so it doesn't drift forever
+      offsetX *= 0.96;
+      offsetY *= 0.96;
+
+      noBtn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
+      requestAnimationFrame(animateNo);
     }
 
     // Hearts burst animation
@@ -212,40 +276,41 @@ viewport" content="width=device-width,initial-scale=1" />
       }
     }
 
-    function win() {
-      // Stop the game
-      document.removeEventListener('mousemove', handleMouseMove);
-      noBtn.style.display = "none";
+    function win(){
+      if (!playing) return;
+      playing = false;
+
+      // stop NO movement
+      noBtn.style.pointerEvents = "none";
       hint.style.display = "none";
-      sub.textContent = "Best choice ever 😌";
+      sub.textContent = "WOOOO 😌";
 
-      // Celebrate
-      spawnHeartBurst(60);
-      const party = setInterval(() => spawnHeartBurst(22), 700);
+      // YES grows huge
+      yesBtn.classList.add('yes-grow');
 
-      success.style.display = "block";
+      // after it grows, hide it and pop a big heart
+      setTimeout(() => {
+        yesBtn.style.visibility = "hidden";
+        bigHeart.style.opacity = "1"; // animation handles the rest
+        bigHeart.style.display = "block";
+        finalMsg.style.display = "inline-block";
+        spawnHeartBurst(70);
 
-      // Slow down after a bit
-      setTimeout(() => clearInterval(party), 5200);
+        const party = setInterval(() => spawnHeartBurst(20), 650);
+        setTimeout(()=> clearInterval(party), 4200);
+      }, 520);
     }
-
-    // Init
-    moveNoButton();
-    document.addEventListener('mousemove', handleMouseMove);
-
-    // Mobile-friendly: also run away when finger gets near
-    document.addEventListener('touchmove', (ev) => {
-      if (!ev.touches || !ev.touches[0]) return;
-      handleMouseMove(ev.touches[0]);
-    }, { passive: true });
 
     yesBtn.addEventListener('click', win);
 
-    // NO click = also moves (just in case she catches it)
-    noBtn.addEventListener('click', moveNoButton);
+    // If she somehow taps NO, just do a tiny dodge anyway
+    noBtn.addEventListener('click', () => {
+      vx += (Math.random() - 0.5) * 22;
+      vy += (Math.random() - 0.5) * 18;
+    });
 
-    // Reposition on resize
-    window.addEventListener('resize', moveNoButton);
+    // Start NO dodge loop
+    animateNo();
   </script>
 </body>
 </html>
