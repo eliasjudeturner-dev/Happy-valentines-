@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine?</title>
+  <style>
+    :root{
+      --bg1:#fff0f6;
+      --bg2:#ffe4ea;
+      --text:#2a2a2a;
+      --yes:#22c55e;
+      --no:#ef4444;
+      --card:#ffffffcc;
+      --shadow: 0 18px 50px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(1000px 600px at 20% 10%, #ffd1dc 0%, transparent 55%),
+        radial-gradient(900px 500px at 80% 90%, #ffc0cb 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+      padding:20px;
+    }
+    .card{
+      width:min(560px, 92vw);
+      background:var(--card);
+      backdrop-filter: blur(8px);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:28px 22px 24px;
+      text-align:center;
+      position:relative;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(26px, 4vw, 38px);
+      letter-spacing:.2px;
+    }
+    p{
+      margin:0 0 18px;
+      opacity:.85;
+      font-size: 16px;
+      line-height:1.4;
+    }
+    .buttons{
+      position:relative;
+      height:120px; /* space for the runaway button */
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      border-radius:14px;
+      padding:14px 20px;
+      font-size:18px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: scale(.98); }
+    #yesBtn{
+      background: linear-gradient(180deg, #34d399, var(--yes));
+      color:white;
+    }
+    #yesBtn:hover{ filter: brightness(1.03); }
+
+    #noBtn{
+      background: linear-gradient(180deg, #fb7185, var(--no));
+      color:white;
+      position:absolute;
+      left:calc(50% + 90px);
+      top:50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .footer{
+      margin-top:10px;
+      font-size:12px;
+      opacity:.6;
+    }
+
+    /* Hearts */
+    .heart{
+      position:fixed;
+      font-size:22px;
+      pointer-events:none;
+      animation: floatUp 1.8s ease-in forwards;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
+    }
+    @keyframes floatUp{
+      0%   { transform: translateY(0) scale(1); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translateY(-220px) scale(1.6); opacity: 0; }
+    }
+
+    /* Success screen */
+    .success{
+      display:none;
+      margin-top:14px;
+    }
+    .success .big{
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight:800;
+      margin:10px 0 0;
+    }
+    .porch{
+      margin-top:10px;
+      font-size: 18px;
+      font-weight:800;
+      color:#b42318;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.06);
+      padding:10px 12px;
+      border-radius: 14px;
+      display:inline-block;
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <h1 id="question">Sarah, will you be my Valentine? 💘</h1>
+    <p id="sub">Be honest… but choose wisely 😇</p>
+
+    <div class="buttons" id="arena">
+      <button id="yesBtn" aria-label="Yes">YES</button>
+      <button id="noBtn" aria-label="No">NO</button>
+    </div>
+
+    <div class="success" id="success">
+      <p class="big">YAYYYYY 💖💖💖</p>
+      <div class="porch">Go check your front porch 🏡</div>
+      <div class="footer">PS: You’re my favorite person.</div>
+    </div>
+
+    <div class="footer" id="hint">Tip: try clicking “NO” 😉</div>
+  </main>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const arena = document.getElementById('arena');
+    const success = document.getElementById('success');
+    const hint = document.getElementById('hint');
+    const sub = document.getElementById('sub');
+
+    // Place NO button somewhere valid inside the arena
+    function moveNoButton() {
+      const arenaRect = arena.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const padding = 10;
+      const maxX = arenaRect.width - btnRect.width - padding;
+      const maxY = arenaRect.height - btnRect.height - padding;
+
+      const x = Math.max(padding, Math.random() * maxX);
+      const y = Math.max(padding, Math.random() * maxY);
+
+      // Position relative to arena
+      noBtn.style.left = `${x + btnRect.width/2}px`;
+      noBtn.style.top  = `${y + btnRect.height/2}px`;
+      noBtn.style.transform = "translate(-50%, -50%)";
+    }
+
+    // Detect mouse proximity to NO button
+    function handleMouseMove(e) {
+      const btnRect = noBtn.getBoundingClientRect();
+      const bx = btnRect.left + btnRect.width / 2;
+      const by = btnRect.top + btnRect.height / 2;
+
+      const dx = e.clientX - bx;
+      const dy = e.clientY - by;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      // If cursor gets too close, run away
+      const dangerRadius = 90;
+      if (dist < dangerRadius && !success.style.display) {
+        moveNoButton();
+      }
+    }
+
+    // Hearts burst animation
+    function spawnHeartBurst(count = 40) {
+      const hearts = ["💖","💘","💗","💓","💕","❤️"];
+      for (let i = 0; i < count; i++) {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+        const x = Math.random() * window.innerWidth;
+        const y = window.innerHeight - (Math.random() * 120);
+
+        h.style.left = `${x}px`;
+        h.style.top = `${y}px`;
+        h.style.fontSize = `${16 + Math.random() * 26}px`;
+        h.style.animationDuration = `${1.4 + Math.random() * 1.2}s`;
+
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 2600);
+      }
+    }
+
+    function win() {
+      // Stop the game
+      document.removeEventListener('mousemove', handleMouseMove);
+      noBtn.style.display = "none";
+      hint.style.display = "none";
+      sub.textContent = "Best choice ever 😌";
+
+      // Celebrate
+      spawnHeartBurst(60);
+      const party = setInterval(() => spawnHeartBurst(22), 700);
+
+      success.style.display = "block";
+
+      // Slow down after a bit
+      setTimeout(() => clearInterval(party), 5200);
+    }
+
+    // Init
+    moveNoButton();
+    document.addEventListener('mousemove', handleMouseMove);
+
+    // Mobile-friendly: also run away when finger gets near
+    document.addEventListener('touchmove', (ev) => {
+      if (!ev.touches || !ev.touches[0]) return;
+      handleMouseMove(ev.touches[0]);
+    }, { passive: true });
+
+    yesBtn.addEventListener('click', win);
+
+    // NO click = also moves (just in case she catches it)
+    noBtn.addEventListener('click', moveNoButton);
+
+    // Reposition on resize
+    window.addEventListener('resize', moveNoButton);
+  </script>
+</body>
+</html>
